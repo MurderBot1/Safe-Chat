@@ -1,2 +1,4 @@
 .vs
+.vscode
 SafeChat.sln
+SafeChat/__pycache__
