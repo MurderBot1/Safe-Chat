@@ -5,18 +5,48 @@ import MessageManager
 # Create the main window
 Root = tk.Tk()
 Root.title("SafeChat")
-Root.geometry("1920x1080")
+Root.geometry("1280x720")
 
 # Left sidebar for people
 PeopleFrame = tk.Frame(Root, width=150, bg="#f0f0f0")
 PeopleFrame.pack(side=tk.LEFT, fill=tk.Y)
+AddPeopleFrame = tk.Frame(PeopleFrame, height=50, bg="#f0f0f0")
+AddPeopleFrame.pack(side=tk.BOTTOM, fill=tk.X)
+
+AddPeopleButton = tk.Button(AddPeopleFrame, text="Add people", command=lambda: MessageManager.AddFriend()).pack(padx=5, pady=5)
 
 PeopleLabel = tk.Label(PeopleFrame, text="People", bg="#f0f0f0", font=("Arial", 12, "bold"))
 PeopleLabel.pack(pady=10)
 
+# Create a canvas and a vertical scrollbar for scrolling it
+Canvas = tk.Canvas(PeopleFrame, width=150)
+Scrollbar = tk.Scrollbar(PeopleFrame, orient="vertical", command=Canvas.yview)
+ScrollableFrame = tk.Frame(Canvas)
+
+# Configure the scrollable region
+ScrollableFrame.bind(
+    "<Configure>",
+    lambda e: Canvas.configure(
+        scrollregion=Canvas.bbox("all")
+    )
+)
+
+# Embed the frame in the Canvas
+Canvas.create_window((0, 0), window=ScrollableFrame, anchor="nw")
+Canvas.configure(yscrollcommand=Scrollbar.set)
+
+def _on_mousewheel(event):
+    Canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+Canvas.bind_all("<MouseWheel>", _on_mousewheel)  # Windows/macOS
+
+# Pack Scrollbar
+Canvas.pack(side="left", fill="both", expand=True)
+Scrollbar.pack(side="right", fill="y")
+
 # Add dummy people
-for Name in ["Alice", "Bob", "Charlie", "Dana"]:
-    tk.Label(PeopleFrame, text=Name, bg="#f0f0f0").pack(anchor="w", padx=10)
+for Name in ["Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana"]:
+    Button = tk.Button(ScrollableFrame, text=Name, bg="#f0f0f0", height=1, width=17, command=lambda n=Name: MessageManager.SwitchChat(n), anchor="w", justify="left").pack(padx=10)
 
 # Main chat area
 ChatFrame = tk.Frame(Root)

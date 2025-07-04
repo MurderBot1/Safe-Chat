@@ -10,4 +10,9 @@ def SendMessage(ChatDisplay, MessageEntry):
         ChatDisplay.config(state='disabled')
         ChatDisplay.yview(tk.END)
         MessageEntry.delete(0, tk.END)
-    
+
+def SwitchChat(Name):
+    print("Switched to " + Name)
+
+def AddFriend():
+    print("Added Friend")
