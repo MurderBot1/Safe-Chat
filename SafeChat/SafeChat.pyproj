@@ -22,6 +22,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CryptoTools.py" />
+    <Compile Include="GUI.py" />
+    <Compile Include="MessageManager.py" />
     <Compile Include="SafeChat.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
