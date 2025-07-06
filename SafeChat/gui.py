@@ -1,19 +1,24 @@
 import tkinter as tk
 from tkinter import scrolledtext
 import MessageManager
+from PIL import Image, ImageTk
+
+import ctypes
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("Chat.SafeChat")
 
 # Create the main window
 Root = tk.Tk()
 Root.title("SafeChat")
 Root.geometry("1280x720")
+Logo = Image.open("Logo.png")
+Logo = ImageTk.PhotoImage(Logo)
+Root.iconphoto(True, Logo)
 
 # Left sidebar for people
 PeopleFrame = tk.Frame(Root, width=150, bg="#f0f0f0")
 PeopleFrame.pack(side=tk.LEFT, fill=tk.Y)
 AddPeopleFrame = tk.Frame(PeopleFrame, height=50, bg="#f0f0f0")
 AddPeopleFrame.pack(side=tk.BOTTOM, fill=tk.X)
-
-AddPeopleButton = tk.Button(AddPeopleFrame, text="Add people", command=lambda: MessageManager.AddFriend()).pack(padx=5, pady=5)
 
 PeopleLabel = tk.Label(PeopleFrame, text="People", bg="#f0f0f0", font=("Arial", 12, "bold"))
 PeopleLabel.pack(pady=10)
@@ -22,6 +27,8 @@ PeopleLabel.pack(pady=10)
 Canvas = tk.Canvas(PeopleFrame, width=150)
 Scrollbar = tk.Scrollbar(PeopleFrame, orient="vertical", command=Canvas.yview)
 ScrollableFrame = tk.Frame(Canvas)
+
+AddPeopleButton = tk.Button(AddPeopleFrame, text="Add people", command=lambda: MessageManager.AddFriend(ScrollableFrame)).pack(padx=5, pady=5)
 
 # Configure the scrollable region
 ScrollableFrame.bind(
@@ -38,15 +45,15 @@ Canvas.configure(yscrollcommand=Scrollbar.set)
 def _on_mousewheel(event):
     Canvas.yview_scroll(int(-1*(event.delta/120)), "units")
 
-Canvas.bind_all("<MouseWheel>", _on_mousewheel)  # Windows/macOS
-
 # Pack Scrollbar
 Canvas.pack(side="left", fill="both", expand=True)
 Scrollbar.pack(side="right", fill="y")
 
+Names = MessageManager.GetFriendsList()  # Get the list of friends from the server
+
 # Add dummy people
-for Name in ["Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana", "Alice", "Bob", "Charlie", "Dana"]:
-    Button = tk.Button(ScrollableFrame, text=Name, bg="#f0f0f0", height=1, width=17, command=lambda n=Name: MessageManager.SwitchChat(n), anchor="w", justify="left").pack(padx=10)
+for Name in Names:
+    tk.Button(ScrollableFrame, text=Name, bg="#f0f0f0", height=1, width=17, command=lambda n=Name: MessageManager.SwitchChat(n), anchor="w", justify="left").pack(padx=10)
 
 # Main chat area
 ChatFrame = tk.Frame(Root)
@@ -65,6 +72,8 @@ MessageEntry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
 SendButton = tk.Button(EntryFrame, text="Send", command=lambda: MessageManager.SendMessage(ChatDisplay, MessageEntry))
 SendButton.pack(side=tk.RIGHT)
+
+EntryFrame.bind('<Return>', lambda event: MessageManager.SendMessage(ChatDisplay, MessageEntry))
 
 # Run the app
 Root.mainloop()

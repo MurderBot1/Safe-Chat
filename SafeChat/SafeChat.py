@@ -1,4 +1,10 @@
 # Example of using the CryptoTools module to encrypt and decrypt text
+import os
+
+directory = '/'
+entries = [os.path.join(directory, entry) for entry in os.listdir(directory)]
+print(entries)
+
 import CryptoTools as CT
 
 Key = "Aasdfdsafasdfasdfadsf"
