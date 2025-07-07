@@ -42,38 +42,40 @@ ScrollableFrame.bind(
 Canvas.create_window((0, 0), window=ScrollableFrame, anchor="nw")
 Canvas.configure(yscrollcommand=Scrollbar.set)
 
-def _on_mousewheel(event):
-    Canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-
 # Pack Scrollbar
 Canvas.pack(side="left", fill="both", expand=True)
 Scrollbar.pack(side="right", fill="y")
-
-Names = MessageManager.GetFriendsList()  # Get the list of friends from the server
-
-# Add dummy people
-for Name in Names:
-    tk.Button(ScrollableFrame, text=Name, bg="#f0f0f0", height=1, width=17, command=lambda n=Name: MessageManager.SwitchChat(n), anchor="w", justify="left").pack(padx=10)
 
 # Main chat area
 ChatFrame = tk.Frame(Root)
 ChatFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
+# Main chat area
+LabelVar = tk.StringVar()
+ChatLabel = tk.Label(ChatFrame, textvariable=LabelVar, font=("Arial", 12, "bold"))
+ChatLabel.pack(anchor="n", padx=10, pady=10)
+
 # Scrollable text area
 ChatDisplay = scrolledtext.ScrolledText(ChatFrame, wrap=tk.WORD, state='disabled')
-ChatDisplay.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+ChatDisplay.pack(padx=10, pady=(10, 0), fill=tk.BOTH, expand=True)
 
 # Message entry and send button
 EntryFrame = tk.Frame(ChatFrame)
 EntryFrame.pack(fill=tk.X, padx=10, pady=5)
 
 MessageEntry = tk.Entry(EntryFrame)
-MessageEntry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+MessageEntry.pack(anchor="s", side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
 SendButton = tk.Button(EntryFrame, text="Send", command=lambda: MessageManager.SendMessage(ChatDisplay, MessageEntry))
 SendButton.pack(side=tk.RIGHT)
 
 EntryFrame.bind('<Return>', lambda event: MessageManager.SendMessage(ChatDisplay, MessageEntry))
+
+# People to the chat selector
+Names = MessageManager.GetFriendsList(ChatDisplay)  # Get the list of friends from the server
+LabelVar.set(Names[0])
+for Name in Names:
+    tk.Button(ScrollableFrame, text=Name, bg="#f0f0f0", height=1, width=17, command=lambda n=Name, l=LabelVar: MessageManager.SwitchChat(l, n), anchor="w", justify="left").pack(padx=10)
 
 # Run the app
 Root.mainloop()
